@@ -1,22 +1,17 @@
 define(['animation_frame', 'point'], function(animationFrame, Point){
-    var NUMBER_OF_STARS = 300;
+    var NUMBER_OF_STARS = 500;
     var Z = 0.1;
     var WARP_Z = 10;
 
     function Starfield(canvas, logoSprite) {
         this.canvas = canvas;
         this.stars = [];
-        this.colorCycle = 0;
         this.logoSprite = logoSprite;
     }
 
     Starfield.prototype.draw = function() {
         this.drawStars();
         this.startAnimation();
-        this.trackLogoSpritePosition();
-    };
-
-    Starfield.prototype.trackLogoSpritePosition = function() {
     };
 
     Starfield.prototype.drawStars = function() {
@@ -33,8 +28,8 @@ define(['animation_frame', 'point'], function(animationFrame, Point){
         star.x = (Math.random() * this.canvas.width - (this.canvas.width * 0.5)) * WARP_Z;
         star.y = (Math.random() * this.canvas.height - (this.canvas.height * 0.5)) * WARP_Z;
         star.z = WARP_Z;
-        star.px = 0;
-        star.py = 0;
+        star.previousX = 0;
+        star.previousY = 0;
     };
 
     Starfield.prototype.startAnimation = function() {
@@ -56,42 +51,33 @@ define(['animation_frame', 'point'], function(animationFrame, Point){
         );
 
         // clear the canvas
-        this.canvas.context.fillStyle = "#000";
         this.canvas.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // update all stars
-        var sat = Math.floor(Z * 500);       // Z range 0.01 -> 0.5
-        if (sat > 100) sat = 100;
-
         for (var i = 0; i < NUMBER_OF_STARS; i++) {
-            var star = this.stars[i],            // the star
+            var star = this.stars[i],       // the star
                 xx = star.x / star.z,       // star position
-                yy = star.y / star.z,
-                e = (1.0 / star.z + 1) * 2; // size i.e. z
+                yy = star.y / star.z;
 
-            if (star.px !== 0) {
-                this.canvas.context.strokeStyle = "hsl(" + ((this.colorCycle * i) % 360) + "," + sat + "%,95%)";
-                this.canvas.context.lineWidth = e;
+            if (star.previousX !== 0) {
+                this.canvas.context.strokeStyle = "rgba(255,255,255,1)";
+                this.canvas.context.lineWidth = 1.5;
                 this.canvas.context.beginPath();
                 this.canvas.context.moveTo(xx + focusPoint.x, yy + focusPoint.y);
-                this.canvas.context.lineTo(star.px + focusPoint.x, star.py + focusPoint.y);
+                this.canvas.context.lineTo(star.previousX + focusPoint.x, star.previousY + focusPoint.y);
                 this.canvas.context.stroke();
             }
 
             // update star position values with new settings
-            star.px = xx;
-            star.py = yy;
+            star.previousX = xx;
+            star.previousY = yy;
             star.z -= Z;
 
             // reset when star is out of the view field
-            if (star.z < Z || star.px > this.canvas.width || star.py > this.canvas.height) {
+            if (star.z < Z || star.previousX > this.canvas.width || star.previousY > this.canvas.height) {
                 // reset star
                 this.resetStar(star);
             }
         }
-
-        // colour cycle sinewave rotation
-        this.colorCycle += 0.01;
 
         animationFrame(function() {
             _this.loop();

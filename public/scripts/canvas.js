@@ -11,7 +11,7 @@ define(function(){
         this.el.width = window.innerWidth;
         this.el.height = window.innerHeight;
         this.context = this.el.getContext("2d");
-        this.context.globalAlpha = 0.3;
+        this.context.globalAlpha = 0.25;
     };
 
     return Canvas
