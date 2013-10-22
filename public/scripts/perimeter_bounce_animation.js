@@ -16,40 +16,48 @@ define(['lib/raphael-min', 'point'], function(ignored, Point){
     };
 
     PerimeterBounceAnimation.prototype.moveToPerimeter = function(animationFinished) {
-        this.currentPoint = new Point(this.el.attrs.x, this.el.attrs.y);
-        this.newPoint = this.getNewPerimeterPoint(0);
-        this.animateToNewPoint(animationFinished);
+        var newPoint = this.getNewPerimeterPoint();
+        // this.animateToNewPoint(animationFinished);
     };
 
-    // We want to ensure that neither of our x/y coords are too similar to the
-    // previous ones. Otherwise we will get only small amounts of translation
-    // across our canvas. We always want the motion to be quite diagonal.
-    PerimeterBounceAnimation.prototype.getNewPerimeterPoint = function(guessCount) {
-        var newPoint = this.rectangle.getRandomPerimeterPoint();
+    PerimeterBounceAnimation.prototype.getNewPerimeterPoint = function() {
+        var currentSide = this.rectangle.getSideFromPoint(this.endPoint);
+        var delta = this.startPoint.delta(this.endPoint);
 
-        // Probably should calculate this based on canvas size.
-        var tolerance = 100;
+        var newPoint = new Point;
 
-        if (guessCount == 10) return newPoint;
-
-        if (this.currentPoint.eitherCoordinateSimilar(newPoint, tolerance)) {
-            // Points are too similar! Roll again.
-            guessCount++;
-            return this.getNewPerimeterPoint(guessCount);
+        if (currentSide == "bottom" || currentSide == "top") {
+            newPoint.x = this.endPoint.x + -delta.x;
+            newPoint.y = this.startPoint.y;
+        } else if (currentSide == "left" || currentSide == "right") {
+            newPoint.x = this.startPoint.x;
+            newPoint.y = this.endPoint.y + -delta.y;
         }
 
-        return newPoint;
+        this.endPoint = newPoint;
+
+        this.animateToNewPoint(function() {
+        });
     };
 
     PerimeterBounceAnimation.prototype.determineDurationOfAnimation = function() {
-        var distance = this.currentPoint.distance(this.newPoint);
+        var distance = this.startPoint.distance(this.endPoint);
         var speed = this.speed;
         var duration = distance / speed;
         return parseInt(duration);
     };
 
+    PerimeterBounceAnimation.prototype.moveToRandomPerimeterPoint = function(animationFinished) {
+        this.endPoint = this.rectangle.getRandomPerimeterPoint();
+        this.animateToNewPoint(animationFinished);
+    };
+
     PerimeterBounceAnimation.prototype.start = function() {
-        this.animationLooper();
+        var _this = this;
+
+        this.moveToRandomPerimeterPoint(function() {
+            _this.animationLooper();
+        });
     };
 
     PerimeterBounceAnimation.prototype.stop = function() {
@@ -71,9 +79,9 @@ define(['lib/raphael-min', 'point'], function(ignored, Point){
     };
 
     PerimeterBounceAnimation.prototype.animateToNewPoint = function(animationFinished) {
-        this.currentPoint = new Point(this.el.attrs.x, this.el.attrs.y);
+        this.startPoint = new Point(this.el.attrs.x, this.el.attrs.y);
         var duration = this.determineDurationOfAnimation();
-        this.animation = Raphael.animation(this.newPoint, duration, animationFinished);
+        this.animation = Raphael.animation(this.endPoint, duration, animationFinished);
         this.el.animate(this.animation);
     };
 

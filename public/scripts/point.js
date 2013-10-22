@@ -16,6 +16,14 @@ define(function(){
         };
     };
 
+    Point.prototype.delta = function(otherPoint) {
+        return {
+            x: this.x - otherPoint.x,
+            y: this.y - otherPoint.y
+        };
+    };
+
+    // a.k.a hypotenuse
     Point.prototype.distance = function(otherPoint) {
         var difference = this.difference(otherPoint);
         return Math.sqrt(Math.pow(difference.x, 2) + Math.pow(difference.y, 2));

@@ -24,7 +24,7 @@ define(['lib/raphael-min', 'rectangle', 'point', 'perimeter_bounce_animation'], 
     };
 
     LogoSprite.prototype.setStartPoint = function() {
-        this.startPoint = this.visibleArea.getRandomPoint();
+        this.startPoint = this.visibleArea.centrePoint();
     };
 
     LogoSprite.prototype.insertElement = function() {

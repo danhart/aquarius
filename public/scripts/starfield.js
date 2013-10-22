@@ -3,10 +3,9 @@ define(['animation_frame', 'point'], function(animationFrame, Point){
     var Z = 0.1;
     var WARP_Z = 10;
 
-    function Starfield(canvas, logoSprite) {
+    function Starfield(canvas) {
         this.canvas = canvas;
         this.stars = [];
-        this.logoSprite = logoSprite;
     }
 
     Starfield.prototype.draw = function() {
@@ -43,11 +42,9 @@ define(['animation_frame', 'point'], function(animationFrame, Point){
     Starfield.prototype.loop = function() {
         var _this = this;
 
-        logoCurrentPoint = this.logoSprite.currentPoint();
-
         var focusPoint = new Point(
-                this.canvas.width - logoCurrentPoint.x,
-                this.canvas.height - logoCurrentPoint.y
+            this.canvas.width / 2,
+            this.canvas.height / 2
         );
 
         // clear the canvas

@@ -9,7 +9,7 @@ define(['canvas', 'starfield', 'svg_paper', 'logo_sprite'], function(Canvas, Sta
         var logoSprite = new LogoSprite(svgPaper);
         logoSprite.draw();
 
-        var starfield = new Starfield(canvas, logoSprite);
+        var starfield = new Starfield(canvas);
         starfield.draw();
 
     }

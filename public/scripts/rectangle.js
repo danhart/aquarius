@@ -4,6 +4,13 @@ define(['random_int', 'point'], function(RandomInt, Point){
         this.height = height;
     }
 
+    Rectangle.prototype.centrePoint = function() {
+        return new Point(
+            this.width / 2,
+            this.height / 2
+        );
+    };
+
     Rectangle.prototype.getRandomPoint = function() {
         return new Point(
             RandomInt.between(0, this.width),
@@ -31,6 +38,18 @@ define(['random_int', 'point'], function(RandomInt, Point){
             return this.width;
         } else if (side == "bottom") {
             return this.height;
+        }
+    };
+
+    Rectangle.prototype.getSideFromPoint = function(point) {
+        if (point.x == 0) {
+            return "left";
+        } else if (point.y == 0) {
+            return "top";
+        } else if (point.x == this.width) {
+            return "right";
+        } else if (point.y == this.height) {
+            return "bottom";
         }
     };
 
